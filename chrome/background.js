@@ -1,4 +1,6 @@
 
+var project = '';
+
 var URL_GETPROJECTS = 'http://localhost:6034/projects.php';
 var URL_SETPROJECT = 'http://localhost:6034/put-chrometabs.php';
 
@@ -39,9 +41,28 @@ function writeProject( projectName, data, callback, failureCallback )
     req.send( postData.join( '&') );
 }
 
-chrome.tabs.onCreated.addListener( function() { saveCurrentTab( 'fromphp' ); } );
-chrome.tabs.onUpdated.addListener( function() { saveCurrentTab( 'fromphp' ); } );
-chrome.tabs.onMoved.addListener( function() { saveCurrentTab( 'fromphp' ); } );
-chrome.tabs.onAttached.addListener( function() { saveCurrentTab( 'fromphp' ); } );
-chrome.tabs.onRemoved.addListener( function() { saveCurrentTab( 'fromphp' ); } );
+
+chrome.runtime.onMessage.addListener(function(message,sender,response) {
+
+    var method = message.method;
+    var args = message.args;
+    switch( method) {
+        case 'changeProject':
+            project = args;
+            break;
+        case 'getCurrentProject':
+            chrome.runtime.sendMessage( {
+                'method' : 'returnCurrentProject',
+                'args' : project 
+            } );
+            break;
+    }
+});
+
+
+chrome.tabs.onCreated.addListener( function() { saveCurrentTab( project ); } );
+chrome.tabs.onUpdated.addListener( function() { saveCurrentTab( project ); } );
+chrome.tabs.onMoved.addListener( function() { saveCurrentTab( project ); } );
+chrome.tabs.onAttached.addListener( function() { saveCurrentTab( project ); } );
+chrome.tabs.onRemoved.addListener( function() { saveCurrentTab( project ); } );
 
