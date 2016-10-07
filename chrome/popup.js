@@ -1,12 +1,11 @@
 
 var currentProject = '';
 
-function sendChangeProjectMessage()
+function sendChangeProjectMessage( project )
 {
-    var projectName = document.getElementById( 'projects' ).value;
     chrome.runtime.sendMessage( {
         'method' : 'changeProject', 
-        'args' : projectName 
+        'args' : project 
     } );
 }
 
@@ -32,15 +31,25 @@ function refreshProjects() {
 
 function populateSelect( data )
 {
-    var str = '<select id="projects">'; 
-    str += '<option value="">-- NOTHING --</option>'; 
+    var str = '';
     for( var i=0; i < data.length; i++ ) {
-        str += '<option value="' + data[i] + '">' + data[i] + '</option>'; 
+        if( data[i] == currentProject ) {
+            str += '<button disabled="disabled" class="selected">'  + data[i] + '</button>';
+        } else {
+            str += '<button id="selectProject_' + data[i] + '">'  + data[i] + '</button>';
+        }
     }
-    str += '</select>';
+
     document.getElementById( 'inner_projects' ).innerHTML = str;
-    document.getElementById( 'projects' ).value = currentProject;
-    document.getElementById( 'projects' ).onchange = sendChangeProjectMessage;
+    //document.getElementById( 'projects' ).value = currentProject;
+    for( var i=0; i < data.length; i++ ) {
+        if( data[i] != currentProject ) {
+            document.getElementById( 'selectProject_' + data[i] ).onclick = function( e ) {
+                var selection = e.target.id.split('_')[1];
+                sendChangeProjectMessage( selection );
+            }
+        }
+    }
 }
 
 function dumpMessage( str ) {
