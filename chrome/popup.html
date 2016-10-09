@@ -4,32 +4,14 @@
         <title>Chrome projects</title>
         <script src="lib/backend.js"></script>
         <script src="popup.js"></script>
+        <link href="style.css" rel="stylesheet" type="text/css">
     </head>
     <body>
-        <style>
-            body { font-size : 22px;}
-            div#message {
-                background : #FF9999;
-                color : #AA0000;
-                padding : 5px;
-                border: 1px solid #AA0000;
-            }
-            button { 
-                display: block; 
-                width: 100%;
-                margin : 6px 0px;
-                font-size : 28px;
-                border : 1px solid black;
-                background: #66AADD;
-                pointer: cursor;
-            }
-            button.selected {
-                background: #DD9966;
-                text-decoration: none;
-                color : black;
-            }
-        </style>
         <div id="message"></div>
+        <div id="inner_add">
+            <input type="text" id="newProject"  />
+            <button id="add">+</button>
+        </div>
         <div id="inner_projects">
         </div>
     </body>

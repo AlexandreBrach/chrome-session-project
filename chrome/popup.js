@@ -38,9 +38,6 @@ function refreshProjects() {
     window.retrieveProjects( 
         function( req ) {
             var projects = JSON.parse( req.responseText );
-            console.log( 'projects retrieved from backend' );
-            console.log( req.responseText );
-            console.log( projects );
             populateSelect( projects );
         }, 
         function( req ) {
@@ -95,10 +92,18 @@ chrome.runtime.onMessage.addListener( function(message,sender,response) {
     }
 });
 
+function addProjectRequest() {
+    var name = document.getElementById( 'newProject' ).value;
+    if( name != "" ) {
+        addProject( name, refreshProjects );
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 
     sendGetCurrentProjectRequest();
     sendGetBackendMessagesRequest();
+    document.getElementById( 'add' ).onclick = addProjectRequest;
 
 }, false);
 

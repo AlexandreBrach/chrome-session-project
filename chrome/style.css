@@ -1,0 +1,41 @@
+body { 
+    font-size : 22px;
+}
+
+div#message {
+    background : #FF9999;
+    color : #AA0000;
+    padding : 5px;
+    border: 1px solid #AA0000;
+}
+
+div#inner_add {
+    width: 200px;
+}
+
+input#newProject {
+    width: 160px;
+    display: inline;
+    margin-right: 3px;
+}
+
+button#add {
+    font-weight : bold;
+    display: inline;
+}
+
+#inner_projects button { 
+    display: block; 
+    width: 100%;
+    margin : 6px 0px;
+    font-size : 28px;
+    border : 1px solid black;
+    background: #66AADD;
+    cursor: pointer;
+}
+
+#inner_projects button.selected {
+    background: #DD9966;
+    text-decoration: none;
+    color : black;
+}

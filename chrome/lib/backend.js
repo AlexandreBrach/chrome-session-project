@@ -2,6 +2,7 @@
 var URL_GETPROJECTS = 'http://localhost:6034/projects.php';
 var URL_GETPROJECT = 'http://localhost:6034/get-chrometabs.php';
 var URL_SETPROJECT = 'http://localhost:6034/put-chrometabs.php';
+var URL_ADDPROJECT = 'http://localhost:6034/create-chrometabs.php';
 
 function retrieveProjects( callback, failureCallback )
 {
@@ -18,6 +19,23 @@ function retrieveProjects( callback, failureCallback )
         }
     };
     req.send(null);
+}
+
+function addProject( name, callback )
+{
+    var req = new XMLHttpRequest();
+    req.open('GET', URL_ADDPROJECT + '?name=' + encodeURIComponent( name ), true ); 
+    req.onreadystatechange = function (aEvt) {
+      if (req.readyState == 4) {
+           if(req.status == 200) {
+               (callback)();
+           }
+           else {
+               
+           }
+        }
+    };
+    req.send(null);    
 }
 
 function writeProject( projectName, data, callback, failureCallback )
