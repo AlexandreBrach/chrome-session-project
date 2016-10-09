@@ -1,15 +1,18 @@
 version: '2'
 services:
     php:
-        restart: always
-        image: php:5.6-apache
+        restart: alwayS
+        build: .
         ports: 
             - $PORT:80
         volumes:
             - ./php:/var/www/html
             - $PROJECT_DIR:/projects
+        environment:
+            - USERID=$USERID
+            - GROUPID=$GROUPID
         logging:
           driver: syslog
           options:
               syslog-address: $SYSLOG_ADDRESS
-              tag: "HABITEO_DOCKER_LOG-chrome"
+              tag: $SYSLOG_TAG

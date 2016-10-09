@@ -3,4 +3,8 @@
 $project = $_GET['project'];
 
 $file = "/projects/$project/chrometabs.json";
-die( file_get_contents( $file ) );
+if( file_exists( $file ) ) {
+    die( file_get_contents( $file ) );
+} else {
+    die( 'null' );
+}

@@ -3,6 +3,8 @@ var project = {};
 
 var lockTabsEvent = false;
 
+var backendMessages = [];
+
 function saveCurrentTab( projectName, windowId ) {
   if( ( !lockTabsEvent ) && ( '' != projectName ) && ( undefined !== projectName ) ) {
      //chrome.tabs.query( { windowId : windowId },
@@ -11,18 +13,38 @@ function saveCurrentTab( projectName, windowId ) {
               projectName, 
               tabs,
               function( req ) {}, 
-              function( req ) {}
+              handleBackendError
           );
       });
   }
 }
 
+function handleBackendError( req, cause )
+{
+   // Inconsistent data
+   if( cause == 'parse' ) {
+       backendMessages.push( req.responseText );
+   }
+   if( cause == 'http' ) {
+       backendMessages.push( 'HTTP Error' );
+   }
+}
+
+/**
+ * change project
+ */
 function changeProject( windowId, projectName )
 {
     lockTabsEvent = true;
     project[windowId] = projectName;
     loadProject( project[windowId], windowId, 
         function( data ) {
+            console.log( data );
+           if( null === data ) {
+                // nothing was found, we do nothing
+               lockTabsEvent = false;
+               return;
+           }
            // Manage an excepion case where there is no tabs in the project
            if( data.length == 0 ) {
                // we unlock and do nothing
@@ -32,13 +54,24 @@ function changeProject( windowId, projectName )
            }
         },
         function( req, cause ) {
-           // Inconsistent data
-           // we unlock and do nothing
-           lockTabsEvent = false;
-        }        
+            handleBackendError( req, cause );
+            // we unlock and do nothing
+            lockTabsEvent = false;
+        }
     );
 }
 
+function sendBackendMessage()
+{
+    chrome.runtime.sendMessage( {
+        'method' : 'returnBackendMessage',
+        'args' : backendMessages
+    } );
+}
+
+/**
+ * Send a message to provide the current project
+ */
 function sendCurrentProject( windowId )
 {
     var p = project[windowId];
@@ -60,6 +93,9 @@ chrome.runtime.onMessage.addListener(function(message,sender,response) {
             break;
         case 'getCurrentProject':
             sendCurrentProject( args );
+            break;
+        case 'getBackendMessages':
+            sendBackendMessage();
             break;
     }
 });

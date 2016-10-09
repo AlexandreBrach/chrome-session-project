@@ -33,10 +33,16 @@ function writeProject( projectName, data, callback, failureCallback )
     req.onreadystatechange = function (aEvt) {
       if (req.readyState == 4) {
            if(req.status == 200) {
+               try {
+                   var data = JSON.parse( req.responseText );
+               } catch( e ) {
+                   (failureCallback)(req, 'parse' );
+                   return; 
+               }
                (callback)(req);
            }
            else {
-               (failureCallback)(req);
+               (failureCallback)(req, 'http' );
            }
         }
     };

@@ -16,4 +16,4 @@ if( false === array_search( $project, getProjects() ) ) {
 }
 $file = "/projects/$project/chrometabs.json";
 file_put_contents( $file, $data );
-die( 'Made.' );
+die( '"Made."' );

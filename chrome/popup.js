@@ -26,6 +26,14 @@ function sendGetCurrentProjectRequest()
     } );
 }
 
+function sendGetBackendMessagesRequest()
+{
+    chrome.runtime.sendMessage( {
+        'method' : 'getBackendMessages', 
+        'args' : null
+    } );
+}
+
 function refreshProjects() {
     window.retrieveProjects( 
         function( req ) {
@@ -76,12 +84,21 @@ chrome.runtime.onMessage.addListener( function(message,sender,response) {
             currentProject = args;
             refreshProjects();
             break;
+        case 'returnBackendMessage':
+            if( args.length != 0 ) {
+                str = '<ul><li>';
+                str += args.join( '</li><li>' );
+                str += '</li></ul>';
+                dumpMessage( str );
+        }
+            break;
     }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
 
     sendGetCurrentProjectRequest();
+    sendGetBackendMessagesRequest();
 
 }, false);
 
