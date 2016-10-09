@@ -3,17 +3,26 @@ var currentProject = '';
 
 function sendChangeProjectMessage( project )
 {
-    chrome.runtime.sendMessage( {
-        'method' : 'changeProject', 
-        'args' : project 
-    } );
+    chrome.windows.getCurrent( function( wdw ) {
+        console.log( 'popup retrieve current window properties' );
+        console.log( wdw );
+        chrome.runtime.sendMessage( {
+            'method' : 'changeProject', 
+            'args' : {
+                'project' : project,
+                'windowId' : wdw.id 
+            }
+        } );
+    })
 }
 
 function sendGetCurrentProjectRequest()
 {
-    chrome.runtime.sendMessage( {
-        'method' : 'getCurrentProject', 
-        'args' : null 
+    chrome.windows.getCurrent( function( wdw ) {
+        chrome.runtime.sendMessage( {
+            'method' : 'getCurrentProject', 
+            'args' : wdw.id
+        } );
     } );
 }
 
@@ -21,6 +30,9 @@ function refreshProjects() {
     window.retrieveProjects( 
         function( req ) {
             var projects = JSON.parse( req.responseText );
+            console.log( 'projects retrieved from backend' );
+            console.log( req.responseText );
+            console.log( projects );
             populateSelect( projects );
         }, 
         function( req ) {
@@ -41,7 +53,6 @@ function populateSelect( data )
     }
 
     document.getElementById( 'inner_projects' ).innerHTML = str;
-    //document.getElementById( 'projects' ).value = currentProject;
     for( var i=0; i < data.length; i++ ) {
         if( data[i] != currentProject ) {
             document.getElementById( 'selectProject_' + data[i] ).onclick = function( e ) {
