@@ -1,7 +1,7 @@
 version: '2'
 services:
     php:
-        restart: alwayS
+        restart: always
         build: .
         ports: 
             - $PORT:80
