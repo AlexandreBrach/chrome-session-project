@@ -99,11 +99,11 @@ function addProjectRequest() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+//document.addEventListener('DOMContentLoaded', function() {
 
     sendGetCurrentProjectRequest();
     sendGetBackendMessagesRequest();
     document.getElementById( 'add' ).onclick = addProjectRequest;
 
-}, false);
+//}, false);
 

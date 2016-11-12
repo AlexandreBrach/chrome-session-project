@@ -11,6 +11,22 @@
         "page" : "background.html",
         "persistent" : true
     },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "css": ["sidebar.css"],
+            "js": ["sidebar.js", "lib/backend.js"]
+        }
+    ],
+    "commands": {
+        "toogle-feature-foo": {
+            "description" : "Toogle sidebar",
+            "suggested_key" : {
+                "default" : "Ctrl+Shift+S",
+                "mac" : "Command+Shift+S"
+            }
+        }
+    },
     "permissions": [
         "activeTab",
         "background",

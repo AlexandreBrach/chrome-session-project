@@ -39,7 +39,6 @@ function changeProject( windowId, projectName )
     project[windowId] = projectName;
     loadProject( project[windowId], windowId, 
         function( data ) {
-            console.log( data );
            if( null === data ) {
                 // nothing was found, we do nothing
                lockTabsEvent = false;
@@ -72,30 +71,80 @@ function sendBackendMessage()
 /**
  * Send a message to provide the current project
  */
-function sendCurrentProject( windowId )
+function sendCurrentProject( windowId, tabId )
 {
     var p = project[windowId];
     if( undefined === p ) {
         p = '';
     }
-    chrome.runtime.sendMessage( {
-        'method' : 'returnCurrentProject',
-        'args' : p
-    } );
+    chrome.tabs.sendMessage(
+         tabId,   
+         {
+            'method' : 'returnCurrentProject',
+            'args' : p
+        } 
+    );
+    return p;
+}
+
+function retrieveProjectsAction( tabId )
+{
+    window.retrieveProjects( 
+        function( req ) {
+            var projects = JSON.parse( req.responseText );
+            chrome.tabs.sendMessage(
+                 tabId,   
+                 {
+                    'method' : 'returnProjects',
+                    'args' : projects
+                } 
+            );
+        }, 
+        function( req ) {
+           dumpMessage( 'Erreur de chargement.' + req.responseText );
+        }
+    );
 }
 
 chrome.runtime.onMessage.addListener(function(message,sender,response) {
     var method = message.method;
     var args = message.args;
     switch( method) {
+        case 'retrieveProjects' :
+            retrieveProjectsAction( sender.tab.id );
+            break;
         case 'changeProject':
-            changeProject( args.windowId, args.project );
+            changeProject( sender.tab.windowId, args.project );
             break;
         case 'getCurrentProject':
-            sendCurrentProject( args );
+            chrome.windows.getCurrent( function( wdw ) {
+                return sendCurrentProject( wdw.id, sender.tab.id );
+            } );
             break;
         case 'getBackendMessages':
             sendBackendMessage();
+            break;
+    }
+});
+
+/**
+ * Toogle sidebar
+ */
+chrome.commands.onCommand.addListener(function(command) {
+    switch( command ) {
+        case "toogle-feature-foo" :
+            chrome.tabs.getSelected(null, function(tab) {
+                chrome.tabs.sendRequest(
+                    //Selected tab id
+                    tab.id,
+                    //Params inside a object data
+                    {callFunction: "toggleSidebar"}, 
+                    //Optional callback function
+                    function(response) {
+                        //console.log(response);
+                    }
+                );
+            });
             break;
     }
 });
