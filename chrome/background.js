@@ -7,7 +7,6 @@ var backendMessages = [];
 
 function saveCurrentTab( projectName, windowId ) {
   if( ( !lockTabsEvent ) && ( '' != projectName ) && ( undefined !== projectName ) ) {
-     //chrome.tabs.query( { windowId : windowId },
      getTabsOfWindow( windowId, function (tabs) {
           window.writeProject( 
               projectName, 
@@ -110,6 +109,12 @@ chrome.runtime.onMessage.addListener(function(message,sender,response) {
     var method = message.method;
     var args = message.args;
     switch( method) {
+        case 'createProject' :
+            addProject( args, function() {
+                project[sender.tab.windowId] = args;
+                saveCurrentTab( project[sender.tab.windowId], sender.tab.windowId ); 
+            }  ); 
+            break;
         case 'retrieveProjects' :
             retrieveProjectsAction( sender.tab.id );
             break;
@@ -124,11 +129,14 @@ chrome.runtime.onMessage.addListener(function(message,sender,response) {
         case 'getBackendMessages':
             sendBackendMessage();
             break;
+        case 'saveCurrentTab' :
+            saveCurrentTab( project[sender.tab.windowId], sender.tab.windowId ); 
+            break;
     }
 });
 
 /**
- * Toogle sidebar
+ * Toogle sidebar command
  */
 chrome.commands.onCommand.addListener(function(command) {
     switch( command ) {

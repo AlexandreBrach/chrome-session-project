@@ -99,6 +99,14 @@ function refreshProjects() {
     } );
 }
 
+function addProject( name, callback)
+{
+    chrome.runtime.sendMessage( {
+        'method' : 'createProject', 
+        'args' : name
+    }, callback );
+}
+
 function populateSelect( data )
 {
     var str = '';
@@ -128,7 +136,9 @@ function dumpMessage( str ) {
 function addProjectRequest() {
     var name = document.getElementById( 'newProject' ).value;
     if( name != "" ) {
-        addProject( name, refreshProjects );
+        addProject( name, function() {
+            refreshProjects();
+        });
     }
 }
 
