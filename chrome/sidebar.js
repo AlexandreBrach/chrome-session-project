@@ -55,9 +55,25 @@ function messageDispatch( message, sender, response)
     }
 }
 
+function keyboardDispatch( e )
+{
+    if( e.ctrlKey ) {
+        switch( e.keyCode ) {
+            case 40 :
+                console.log( 'up' );
+                break;
+            case 38:
+                console.log( 'down' );
+                break;
+        }
+    }
+}
+
+
 function entryPoint()
 {
     chrome.runtime.onMessage.addListener( messageDispatch );
+    document.addEventListener( 'keyup', keyboardDispatch, false );
 
     getCurrentProject();
     getBackendMessages();
