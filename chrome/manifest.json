@@ -15,7 +15,11 @@
         {
             "matches": ["<all_urls>"],
             "css": ["sidebar.css"],
-            "js": ["sidebar.js"]
+            "js": [
+                "sidebar.js", 
+                "vendor/angular/angular.min.js",
+                "application/sidebar.js"
+            ]
         }
     ],
     "commands": {
