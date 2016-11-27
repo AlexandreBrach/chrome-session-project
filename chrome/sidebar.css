@@ -1,9 +1,10 @@
 
 #bookmark-sidebar {
+    background: #333333;
+    color : #DDDDDD;
     font-family:Arial,Helvetica,sans-serif;
     text-align: left;
     z-index: 1000000;
-    background: white;
     font-size : 14px !important;
     position:fixed;
     top:0px;
@@ -12,7 +13,6 @@
     border-right: 1px solid black;
     height:100%;
     padding: 6px;
-    color : black !important;
     overflow-y:auto;
 }
 
@@ -31,7 +31,6 @@
     width: 160px !important;
     display: inline;
     margin-right: 3px !important;
-    border: 1px solid grey;
 }
 
 #bookmark-sidebar button#add {
@@ -39,26 +38,41 @@
     display: inline !important;
 }
 
+#bookmark-sidebar #inner_projects .item_container {
+    border-left : 1px solid #224400;
+    margin-left : 4px;
+    padding-left : 12px;
+}
+
 #bookmark-sidebar #inner_projects button { 
-    display: block !important;
-    width: 100%;
-    margin : 6px 0px !important;
+    display: inline !important;
     font-size : 14px !important;
     border : 0px solid black;
     background: transparent !important;
+    margin : 2px 0px !important;
+    text-shadow: 2px 2px 4px black;
+}
+
+#bookmark-sidebar #inner_projects button.collapse { 
+    color : #88FF00 !important;
+    font-family:Monospace;
+    font-size : 16px;
+    font-weight: bold;
+    padding : 0px;
     cursor: pointer;
 }
 
-#bookmark-sidebar #inner_projects button.selected {
-    background: #DD9966 !important;
-    text-decoration: none;
-    color : black !important;
+#bookmark-sidebar #inner_projects button.item { 
+    /*color : white !important;*/
 }
 
+#bookmark-sidebar #inner_projects button.item.selected {
+    color: #FFDD00 !important;
+}
 
-
-
-
+#bookmark-sidebar #inner_projects button.item:hover {
+    color: #FFEE99 !important;
+}
 
 .reset-this {
     animation : none;

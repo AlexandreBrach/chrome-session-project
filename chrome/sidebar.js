@@ -48,7 +48,7 @@ function entryPoint()
             </button> \
         </div> \
         <div id="inner_projects" class="reset-this"> \
-        <items items="projects" current-project="currentProject"></items> \
+        <items items="projects" collapse="false" current-project="currentProject"></items> \
         </div> \
     </div> \
     ';

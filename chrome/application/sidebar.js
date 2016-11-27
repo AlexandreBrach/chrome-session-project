@@ -73,13 +73,27 @@ angular.module('myApp', [])
             return r;
         }
 
+        function populateIHMData( data )
+        {
+            data.collapse = true;
+            var p = Object.keys( data );
+            for( var i=0; i < p.length; i++ ) {
+                if( ( typeof( data[p[i]] ) == 'object' ) && data[p[i]].hasChild ) {
+                    data[p[i]] = populateIHMData( data[p[i]] );
+                }
+            }
+
+            return data;
+        }
+
         function messageDispatch( message, sender, response)
         {
             var method = message.method;
             var args = message.args;
             switch( method ) {
                 case 'returnProjects' :
-                    $scope.projects = calcProjectTree( args, null );
+                    var data = calcProjectTree( args, null );
+                    $scope.projects = populateIHMData( data );
                     $scope.$apply();
                     break;
                 case 'returnCurrentProject':

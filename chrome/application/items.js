@@ -1,13 +1,30 @@
 angular.module('myApp').directive('items', function () {
     return {
         template: ' \
-            <div ng-repeat="(itemName,item) in items"> \
-                <div ng-if="(itemName !== \'leaf\') && (itemName !== \'hasChild\') && (itemName !== \'item\')"> \
-                    <button ng-disabled="{{item.item == currentProject}}" ng-class="item.item == currentProject ? \'selected reset-this\' : \'reset-this\'" ng-click="$parent.$parent.sendChangeProjectMessage( item.item )"> \
-                        {{itemName}} \
-                    </button> \
-                    <div ng-if="item.hasChild" style="border-left : 2px solid red;padding-left : 16px;"> \
-                        <items items="item" current-project="currentProject"></items> \
+            <div ng-show="false === collapse"> \
+                <div  ng-repeat="(itemName,item) in items"> \
+                    <div ng-if="(itemName !== \'leaf\') && (itemName !== \'collapse\') && (itemName !== \'hasChild\')&& (itemName !== \'item\')"> \
+                        <button \
+                            class="collapse" \
+                            ng-if="item.hasChild" \
+                            ng-click="item.collapse = !item.collapse"> \
+                            {{item.collapse ? "▶" : "▼"}} \
+                        </button> \
+                        <button \
+                            class="collapse" \
+                            ng-if="!item.hasChild" \
+                            ng-disabled="false"> \
+                            &nbsp; \
+                        </button> \
+                        <button \
+                            ng-disabled="{{item.item == currentProject}}" \
+                            ng-class="item.item == currentProject ? \'selected item reset-this\' : \'item reset-this\'" \
+                            ng-click="$parent.$parent.sendChangeProjectMessage( item.item )"> \
+                            {{itemName}} \
+                        </button> \
+                        <div class="item_container" ng-if="item.hasChild"> \
+                            <items items="item" collapse="item.collapse" current-project="currentProject"></items> \
+                        </div> \
                     </div> \
                 </div> \
             </div>',
@@ -15,6 +32,7 @@ angular.module('myApp').directive('items', function () {
         replace:true,
         scope: {
             items: '=items',
+            collapse: '=collapse',
             currentProject: '=currentProject'
         },
         link: function (scope, element, attrs) {
