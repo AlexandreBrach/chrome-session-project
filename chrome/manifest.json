@@ -18,7 +18,8 @@
             "js": [
                 "sidebar.js", 
                 "vendor/angular/angular.min.js",
-                "application/sidebar.js"
+                "application/sidebar.js",
+                "application/items.js"
             ]
         }
     ],

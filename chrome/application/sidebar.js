@@ -23,7 +23,7 @@ angular.module('myApp', [])
             } );
         }
 
-        function addProjectRequest() {
+        $scope.addProjectRequest = function() {
             var name = document.getElementById( 'newProject' ).value;
             if( name != "" ) {
                 addProject( name, function() {
@@ -40,40 +40,37 @@ angular.module('myApp', [])
             }, callback );
         }
 
-        function sendChangeProjectMessage( project )
-        {
-            chrome.runtime.sendMessage( {
-                'method' : 'changeProject', 
-                'args' : {
-                    'project' : project
-                }
-            } );
-        }
-
-        function populateSelect( data )
-        {
-            var str = '';
-            for( var i=0; i < data.length; i++ ) {
-                if( data[i] == currentProject ) {
-                    str += '<button disabled="disabled" class="selected reset-this">'  + data[i] + '</button>';
-                } else {
-                    str += '<button id="selectProject_' + data[i] + '" class="reset-this">'  + data[i] + '</button>';
-                }
-            }
-
-            document.getElementById( 'inner_projects' ).innerHTML = str;
-            for( var i=0; i < data.length; i++ ) {
-                if( data[i] != currentProject ) {
-                    document.getElementById( 'selectProject_' + data[i] ).onclick = function( e ) {
-                        var selection = e.target.id.split('_')[1];
-                        sendChangeProjectMessage( selection );
-                    }
-                }
-            }
-        }
-
         function dumpMessage( str ) {
             document.getElementById( 'message' ).innerHTML = str;
+        }
+
+        function calcProjectTree( args, existing ) {
+            var r = {};
+            if( null === existing ) {
+                existing = [];
+            }
+            var p = [];
+            for( var i=0; i < args.length; i++ ) {
+                var a = args[i].split( '.' );
+                for( var j = a.length - 1; j >= 0; j-- ) {
+                    if( j == a.length -1 ) {
+                        var t = {};
+                        t[a[j]] = {
+                            'leaf' : true,
+                            'item' : args[i]
+                        };
+                    } else {
+                        var temp = angular.extend( {}, t ); 
+                        var t = {};
+                        t[a[j]] = temp;
+                    }
+                    t[a[j]].hasChild = ( j < a.length - 1 ) ? true : false;
+                }
+                angular.merge( r, t );
+            }
+            r.hasChild = true;
+
+            return r;
         }
 
         function messageDispatch( message, sender, response)
@@ -82,10 +79,11 @@ angular.module('myApp', [])
             var args = message.args;
             switch( method ) {
                 case 'returnProjects' :
-                    populateSelect( args );
+                    $scope.projects = calcProjectTree( args, null );
+                    $scope.$apply();
                     break;
                 case 'returnCurrentProject':
-                    currentProject = args;
+                    $scope.currentProject = args;
                     refreshProjects();
                     break;
                 case 'returnBackendMessage':
@@ -99,8 +97,8 @@ angular.module('myApp', [])
             }
         }
 
-        var currentProject = '';
-        document.getElementById( 'bookmark_sidebar_add' ).onclick = addProjectRequest;
+        $scope.currentProject = '';
+        $scope.projects = [];
         chrome.runtime.onMessage.addListener( messageDispatch );
         getCurrentProject();
         getBackendMessages();
