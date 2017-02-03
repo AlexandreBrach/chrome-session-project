@@ -51,6 +51,7 @@
     background: transparent !important;
     margin : 2px 0px !important;
     text-shadow: 2px 2px 4px black;
+    vertical-align: baseline;
 }
 
 #bookmark-sidebar #inner_projects button.collapse { 
@@ -68,6 +69,10 @@
 
 #bookmark-sidebar #inner_projects button.item.selected {
     color: #FFDD00 !important;
+}
+
+#bookmark-sidebar #inner_projects button.item.cursor {
+    color: #FFEE99 !important;
 }
 
 #bookmark-sidebar #inner_projects button.item:hover {

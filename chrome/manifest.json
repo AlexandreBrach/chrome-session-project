@@ -19,7 +19,8 @@
                 "sidebar.js", 
                 "vendor/angular/angular.min.js",
                 "application/sidebar.js",
-                "application/items.js"
+                "application/items.js",
+                "application/tabs.service.js"
             ]
         }
     ],
