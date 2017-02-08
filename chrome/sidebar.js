@@ -17,7 +17,7 @@ function entryPoint()
     sidebar.id = "bookmark-sidebar";
     sidebar.innerHTML = ' \
     <div id="chrome-sidebar-appRoot" ng-controller="mycontroller"> \
-        <div id="message"></div> \
+        <div ng-show="message = \'\'" id="message">{{message}}</div> \
         <div id="inner_add" class="reset-this"> \
             <input type="text" id="newProject" class="reset-this" /> \
             <button id="bookmark_sidebar_add" class="reset-this" ng-click="addProjectRequest()"> \

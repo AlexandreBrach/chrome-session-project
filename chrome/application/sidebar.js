@@ -1,6 +1,6 @@
 
 angular.module('myApp', [])
-    .controller( 'mycontroller', ['$scope', '$rootScope', 'chromeTabs', function($scope, $rootScope, chromeTabs) {
+    .controller( 'mycontroller', ['$scope', '$rootScope', 'chromeTabs', 'itemsService', function($scope, $rootScope, chromeTabs, itemsService) {
 
         function getCurrentProject()
         {
@@ -41,79 +41,7 @@ angular.module('myApp', [])
         }
 
         function dumpMessage( str ) {
-            document.getElementById( 'message' ).innerHTML = str;
-        }
-
-        function calcProjectTree( args, existing ) {
-            var r = {};
-            if( null === existing ) {
-                existing = [];
-            }
-            var p = [];
-            for( var i=0; i < args.length; i++ ) {
-                var a = args[i].split( '.' );
-                for( var j = a.length - 1; j >= 0; j-- ) {
-                    if( j == a.length -1 ) {
-                        var t = {};
-                        t[a[j]] = {
-                            'leaf' : true,
-                            'item' : args[i]
-                        };
-                    } else {
-                        var temp = angular.extend( {}, t ); 
-                        var t = {};
-                        t[a[j]] = temp;
-                    }
-                    t[a[j]].hasChild = ( j < a.length - 1 ) ? true : false;
-                }
-                angular.merge( r, t );
-            }
-            r.hasChild = true;
-
-            return r;
-        }
-
-        /**
-         * add IHM specific data to the project structure
-         */
-        function populateIHMData( data )
-        {
-            data.collapse = true;
-            var p = Object.keys( data );
-            for( var i=0; i < p.length; i++ ) {
-                if( ( typeof( data[p[i]] ) == 'object' ) && data[p[i]].hasChild ) {
-                    data[p[i]] = populateIHMData( data[p[i]] );
-                }
-            }
-
-            return data;
-        }
-
-        /** 
-         * Return the visible items from the projects tree structure
-         */
-        function getVisibleItems( projects ) 
-        {
-            var p = Object.keys( projects );
-            var r = [];
-            for( var i=0; i < p.length; i++ ) {
-                var project = projects[p[i]];
-                // ignore scalar properties
-                if( 'object' === typeof( project ) ) {
-                    // simple folder (without property item )
-                    if( undefined === project.item ) {
-                        r.push( p[i] );
-                    } else {
-                        r.push( project.item );
-                    }
-                    if( true === project.hasChild ) {
-                        if( false === project.collapse ) {
-                            r = r.concat( getVisibleItems( project ) );
-                        }
-                    }
-                }
-            }
-            return r;
+            $scope.message = str;
         }
 
         function messageDispatch( message, sender, response)
@@ -122,14 +50,13 @@ angular.module('myApp', [])
             var args = message.args;
             switch( method ) {
                 case 'returnProjects' :
-                    var data = calcProjectTree( args, null );
-                    $scope.projects = populateIHMData( data );
-                    visibleItems = getVisibleItems( $scope.projects );
+                    var data = itemsService.calcProjectTree( args );
+                    $scope.projects = itemsService.populateIHMData( data );
+                    visibleItems = itemsService.getVisibleItems( $scope.projects );
                     $scope.$apply();
                     break;
                 case 'returnCurrentProject':
                     $scope.currentProject = args;
-                    //$scope.cursor = args;
                     refreshProjects();
                     break;
                 case 'returnBackendMessage':
@@ -147,12 +74,16 @@ angular.module('myApp', [])
         {
             if( e.ctrlKey ) {
                 switch( e.keyCode ) {
+                    
+                    // up
                     case 38 :
                         if( $scope.cursor > 0 ) {
                             $scope.cursor--;
                             calcCursorValue(); 
                         }
                         break;
+
+                    // down
                     case 40:
                         if( $scope.cursor < visibleItems.length - 1 ) {
                             $scope.cursor++;
@@ -163,16 +94,18 @@ angular.module('myApp', [])
                     // right
                     case 39:
                         var item = visibleItems[$scope.cursor];
+                        itemsService.setProjectItemCollapseStatus( item, $scope.projects, false );
                         // Liste des projets (en arbre) : $scope.projects
-                        item.collapse = false;
                         $rootScope.$broadcast( 'changeVisibleItem', item );
                         break;
+
                     // left
                     case 37:
                         var item = visibleItems[$scope.cursor];
-                        item.collapse = true;
+                        itemsService.setProjectItemCollapseStatus( item, $scope.projects, true );
                         $rootScope.$broadcast( 'changeVisibleItem', item );
                         break;
+
                     // SPACE
                     case 32:
                         chromeTabs.loadProject( $scope.cursorValue );
@@ -189,6 +122,7 @@ angular.module('myApp', [])
         function calcCursorPosition()
         {
             $scope.cursor = visibleItems.indexOf( $scope.cursorValue ); 
+            $scope.$apply();
         }
 
         var visibleItems = [];
@@ -206,7 +140,7 @@ angular.module('myApp', [])
         });
 
         $rootScope.$on( 'changeVisibleItem', function( args ) {
-            visibleItems = getVisibleItems( $scope.projects );
+            visibleItems = itemsService.getVisibleItems( $scope.projects );
             calcCursorPosition();
         });
 
