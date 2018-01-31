@@ -3,7 +3,7 @@ services:
     php:
         restart: always
         build: .
-        ports: 
+        ports:
             - $PORT:80
         volumes:
             - ./php:/var/www/html
@@ -11,8 +11,3 @@ services:
         environment:
             - USERID=$USERID
             - GROUPID=$GROUPID
-        logging:
-          driver: syslog
-          options:
-              syslog-address: $SYSLOG_ADDRESS
-              tag: $SYSLOG_TAG
